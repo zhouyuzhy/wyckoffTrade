@@ -975,6 +975,52 @@ function DrawKLine(curList, stockInfo)
     }
     dotDateSortList.push(item);
 
+    //画趋势的一半线位
+    if(dotDateSortList.length > 2)
+    {
+        curDotObj = dotDateSortList[dotDateSortList.length-1]
+        lastDotObj = dotDateSortList[dotDateSortList.length-2]
+        high = 0
+        low = 0
+        for (var i = 0; i < curList.length; i++)
+        {
+            isUp = curDotObj.isUp
+            if(isUp)
+            {
+                if(curList[i].date==curDotObj.date)
+                {
+                    high = curList[i].high
+                }
+                if(curList[i].date==lastDotObj.date)
+                {
+                    low = curList[i].low
+                }
+            }else
+            {
+                if(curList[i].date==curDotObj.date)
+                {
+                    low = curList[i].low
+                }
+                if(curList[i].date==lastDotObj.date)
+                {
+                    high = curList[i].high
+                }
+            }
+        }
+        half = parseFloat((high + low) / 2).toFixed(2)
+        var halfPricePy = ((maxIndex - half / parseFloat(latticeValue)) * space);
+        contextK.save();
+        contextK.strokeStyle = 'red'
+        contextK.fillStyle = 'black'
+        contextK.beginPath()
+        contextK.lineWidth = 1
+        contextK.moveTo(offsetXSpace, halfPricePy)
+        contextK.lineTo(spaceX * xIndex, halfPricePy)
+        contextK.stroke();
+        contextK.fillText(half, spaceX * xIndex - spaceX * 5, halfPricePy);
+        contextK.restore();
+    }
+
     //获取点数图维斯波数据
 
     var waveDotList = [];
