@@ -1589,20 +1589,20 @@ function CalculateDotGraphic(stockInfo, dataList)
     //dataList.reverse();
     var status = true;
     var curPrice = 0;
-    if (stockInfo.isClose)
-    {
+//    if (stockInfo.isClose)
+//    {
         status = parseFloat(dataList[0].close) > parseFloat(dataList[0].open);
         curPrice = dataList[0].close;
-    }
-    else
-    {
-        var data1 = dataList[0];
-        var data2 = dataList[1];
-        var increaseRate = data2.high / data1.low - 1;
-        var decreaseRate = 1 - data2.low / data1.high;
-        status = parseFloat(increaseRate) > parseFloat(decreaseRate);
-        curPrice = status ? data1.high : data1.low;
-    }
+//    }
+//    else
+//    {
+//        var data1 = dataList[0];
+//        var data2 = dataList[1];
+//        var increaseRate = data2.high / data1.low - 1;
+//        var decreaseRate = 1 - data2.low / data1.high;
+//        status = parseFloat(increaseRate) > parseFloat(decreaseRate);
+//        curPrice = status ? data1.high : data1.low;
+//    }
 
     //第一个点
 
@@ -1631,7 +1631,8 @@ function CalculateDotGraphic(stockInfo, dataList)
         //前点涨
         if (preDot.isUp)
         {
-            curPrice = stockInfo.isClose ? curData.close : curData.high;
+//            curPrice = stockInfo.isClose ? curData.close : curData.high;
+            curPrice = curData.close;
             var y = getGridIndexCurrent(stockInfo, curPrice, true);
             //当前点也涨
             if (y > preDot.position.y)
@@ -1660,7 +1661,8 @@ function CalculateDotGraphic(stockInfo, dataList)
             //当前点跌
             else if (y <= preDot.position.y)
             {
-                curPrice = stockInfo.isClose ? curData.close : curData.low;
+//                curPrice = stockInfo.isClose ? curData.close : curData.low;
+                curPrice = curData.close;
                 var y = getGridIndexCurrent(stockInfo, curPrice, false);
                 //是否转折
 
@@ -1704,7 +1706,8 @@ function CalculateDotGraphic(stockInfo, dataList)
                     //保持极值的点在第一位
                     if (dotValueList[0].datas.length > 0)
                     {
-                        if ((stockInfo.isClose && dotValueList[0].datas[0].close < curData.close) || (!stockInfo.isClose && dotValueList[0].datas[0].high < curData.high))
+//                        if ((stockInfo.isClose && dotValueList[0].datas[0].close < curData.close) || (!stockInfo.isClose && dotValueList[0].datas[0].high < curData.high))
+                        if (dotValueList[0].datas[0].close < curData.close)
                         {
                             dotValueList[0].datas.unshift(curData);
                         }
@@ -1746,7 +1749,8 @@ function CalculateDotGraphic(stockInfo, dataList)
         //前点跌
         else
         {
-            curPrice = stockInfo.isClose ? curData.close : curData.low;
+//            curPrice = stockInfo.isClose ? curData.close : curData.low;
+            curPrice = curData.close;
             var y = getGridIndexCurrent(stockInfo, curPrice, false);
             //当前点也跌
             if (y < preDot.position.y)
@@ -1774,7 +1778,8 @@ function CalculateDotGraphic(stockInfo, dataList)
             //当前点涨
             else if (y >= preDot.position.y)
             {
-                curPrice = stockInfo.isClose ? curData.close : curData.high;
+//                curPrice = stockInfo.isClose ? curData.close : curData.high;
+                curPrice = curData.close;
                 var y = getGridIndexCurrent(stockInfo, curPrice, true);
                 //是否转折
 
@@ -1819,7 +1824,8 @@ function CalculateDotGraphic(stockInfo, dataList)
                     //保持极值的点在第一位
                     if (dotValueList[0].datas.length > 0)
                     {
-                        if ((stockInfo.isClose && dotValueList[0].datas[0].close > curData.close) || (!stockInfo.isClose && dotValueList[0].datas[0].low > curData.low))
+//                        if ((stockInfo.isClose && dotValueList[0].datas[0].close > curData.close) || (!stockInfo.isClose && dotValueList[0].datas[0].low > curData.low))
+                        if(dotValueList[0].datas[0].close > curData.close)
                         {
                             dotValueList[0].datas.unshift(curData);
                         }
