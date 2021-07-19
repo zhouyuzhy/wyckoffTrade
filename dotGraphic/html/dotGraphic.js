@@ -564,6 +564,7 @@ function DrawKLine(curList, stockInfo)
         contextK.fillText(" 点数维斯波", spaceX * xIndex, waveDotStartpy + waveDotIndex * space / 2);
         var sdStartpy = waveDotStartpy + waveDotIndex * space;
         contextK.fillText(" 供需指数", spaceX * xIndex, sdStartpy + sdIndex * space / 2);
+        contextK.fillText(" 振幅/量", spaceX * xIndex, sdStartpy + sdIndex * space / 2 + space);
         var rsStartpy = sdStartpy + sdIndex * space;
         if(rsIndex>0)
         {
@@ -572,10 +573,10 @@ function DrawKLine(curList, stockInfo)
             contextK.fillText(" 量小价大延续", spaceX * xIndex, rsStartpy + rsIndex * space / 2 + space + space);
         }
         var accPercentStartpy = rsStartpy + rsIndex * space;
-        contextK.fillText(" 波段涨跌幅", spaceX * xIndex, accPercentStartpy + accPercentIndex * space / 2);
+        contextK.fillText(" 波段涨跌幅", spaceX * xIndex, accPercentStartpy + accPercentIndex * space / 2 + space);
         var accSpeedStartpy = accPercentStartpy + accPercentIndex * space;
         contextK.fillText(" 波段涨跌速", spaceX * xIndex, accSpeedStartpy + accSpeedIndex * space / 2);
-
+        contextK.fillText(" 量/涨跌幅", spaceX * xIndex, accSpeedStartpy + accSpeedIndex * space / 2 + space);
 
         // code name
         // var str1 = stockInfo.code + "           " + stockInfo.name;
@@ -1225,6 +1226,8 @@ function DrawKLine(curList, stockInfo)
                     contextK.moveTo(lastDot.px, lastDot.lowpx)
                     contextK.lineTo(px, highpx)
                     contextK.stroke()
+                    contextK.fillText(parseFloat(waveDotList[i].speed / 10000).toFixed(2), px, highpx - 1.5 * space)
+                    contextK.restore()
                 }
                 else
                 {
@@ -1232,6 +1235,8 @@ function DrawKLine(curList, stockInfo)
                     contextK.moveTo(lastDot.px, lastDot.highpx)
                     contextK.lineTo(px, lowpx)
                     contextK.stroke()
+                    contextK.fillText(parseFloat(waveDotList[i].speed / 10000).toFixed(2), px, lowpx + space)
+                    contextK.restore()
                 }
 
                 lastDot = {
