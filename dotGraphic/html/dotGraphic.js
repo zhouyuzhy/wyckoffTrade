@@ -1672,7 +1672,7 @@ function CalculateDotGraphic(stockInfo, dataList)
                     //换列
                     var x = preDot.position.x + 1;
                     //不换列条件
-                    var isNotTurn = isOneDotRebuild && stockInfo.dotInterval == 1 && (preDot.position.x >= 1) &&
+                    var isNotTurn = !isOneDotRebuild && stockInfo.dotInterval == 1 && (preDot.position.x >= 1) &&
                         (dotValueList.length > 2 && dotValueList[0].position.y <= dotValueList[2].position.y) &&
                         (y <= dotValueList[1].position.y) && preDot.position.x - 1 == dotValueList[1].position.x;
                     if (isNotTurn)
