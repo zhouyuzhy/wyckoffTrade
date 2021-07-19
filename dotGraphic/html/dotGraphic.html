@@ -176,7 +176,7 @@
         var y1 = date.getFullYear();
         var m1 = (Array(2).join('0') + (date.getMonth() + 1)).slice(-2);
         var d1 = (Array(2).join('0') + date.getDate()).slice(-2);
-        date.setDate(date.getDate() - 365);
+        date.setDate(date.getDate() - 100);
         var y2 = date.getFullYear();
         var m2 = (Array(2).join('0') + (date.getMonth() + 1)).slice(-2);
         var d2 = (Array(2).join('0') + date.getDate()).slice(-2);
@@ -208,7 +208,7 @@
         var day = now.getDate();
         var weekDay = now.getDay();
         var start = new Date(year, month, day, 9, 30);
-        var end = new Date(year, month, day, 15, 0);
+        var end = new Date(year, month, day, 16, 0);
         if (now > start && now < end && (weekDay > 0 && weekDay < 6) && isOnline)
         {
             generate()

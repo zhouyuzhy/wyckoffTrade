@@ -420,12 +420,18 @@ function DrawKLine(curList, stockInfo)
     //成交量占据格数
     var volumeIndex = 3;
     //维斯波占格
-    var waveIndex = 3;
+    var waveIndex = 0;
     //点数图为标准的维斯波占格
     var waveDotIndex = 3;
     //供需指数占格
     var sdIndex = 3;
-    var sumIndex = offsetYL + dateIndex + volumeIndex + waveIndex + waveDotIndex + sdIndex;
+    //真实波幅占格
+    var rsIndex = 3;
+    //点数图为标准的累积涨跌幅
+    var accPercentIndex = 3;
+    //点数图为标准的涨跌速
+    var accSpeedIndex = 3;
+    var sumIndex = offsetYL + dateIndex + volumeIndex + waveIndex + waveDotIndex + sdIndex + rsIndex + accPercentIndex + accSpeedIndex;
     space = minSpace * scale;
 
     //字体
@@ -547,11 +553,31 @@ function DrawKLine(curList, stockInfo)
         contextK.textBaseline = 'right';
         //设置文本的垂直对齐方式
         contextK.textAlign = 'left';
-        contextK.fillText(" 成交量", spaceX * xIndex, space * yIndex + space * dateIndex + volumeIndex * space / 2);
-        contextK.fillText(" 常规维斯波", spaceX * xIndex, space * yIndex + space * dateIndex + volumeIndex * space + waveIndex * space / 2);
-        contextK.fillText(" 点数维斯波", spaceX * xIndex, space * yIndex + space * dateIndex + volumeIndex * space + waveIndex * space + waveDotIndex * space / 2);
-        contextK.fillText(" 供需指数", spaceX * xIndex, space * yIndex + space * dateIndex + volumeIndex * space + waveIndex * space + waveDotIndex * space + sdIndex * space / 2);
-        // code name 
+        var volumeStartpy = space * yIndex + space * dateIndex;
+        contextK.fillText(" 成交量", spaceX * xIndex, volumeStartpy + volumeIndex * space / 2);
+        var waveStartpy = volumeStartpy + volumeIndex * space;
+        if(waveIndex > 0)
+        {
+            contextK.fillText(" 常规维斯波", spaceX * xIndex, waveStartpy + waveIndex * space / 2);
+        }
+        var waveDotStartpy = waveStartpy + waveIndex * space;
+        contextK.fillText(" 点数维斯波", spaceX * xIndex, waveDotStartpy + waveDotIndex * space / 2);
+        var sdStartpy = waveDotStartpy + waveDotIndex * space;
+        contextK.fillText(" 供需指数", spaceX * xIndex, sdStartpy + sdIndex * space / 2);
+        var rsStartpy = sdStartpy + sdIndex * space;
+        if(rsIndex>0)
+        {
+            contextK.fillText(" 真实波幅", spaceX * xIndex, rsStartpy + rsIndex * space / 2);
+            contextK.fillText(" 量大价小SOT", spaceX * xIndex, rsStartpy + rsIndex * space / 2 + space);
+            contextK.fillText(" 量小价大延续", spaceX * xIndex, rsStartpy + rsIndex * space / 2 + space + space);
+        }
+        var accPercentStartpy = rsStartpy + rsIndex * space;
+        contextK.fillText(" 波段涨跌幅", spaceX * xIndex, accPercentStartpy + accPercentIndex * space / 2);
+        var accSpeedStartpy = accPercentStartpy + accPercentIndex * space;
+        contextK.fillText(" 波段涨跌速", spaceX * xIndex, accSpeedStartpy + accSpeedIndex * space / 2);
+
+
+        // code name
         // var str1 = stockInfo.code + "           " + stockInfo.name;
         // var strWhith = contextD.measureText(str1).width;
 
@@ -1021,6 +1047,52 @@ function DrawKLine(curList, stockInfo)
         contextK.restore();
     }
 
+    //画趋势的一半线位
+    if(dotDateSortList.length > 3)
+    {
+        curDotObj = dotDateSortList[dotDateSortList.length-2]
+        lastDotObj = dotDateSortList[dotDateSortList.length-3]
+        high = 0
+        low = 0
+        for (var i = 0; i < curList.length; i++)
+        {
+            isUp = curDotObj.isUp
+            if(isUp)
+            {
+                if(curList[i].date==curDotObj.date)
+                {
+                    high = curList[i].high
+                }
+                if(curList[i].date==lastDotObj.date)
+                {
+                    low = curList[i].low
+                }
+            }else
+            {
+                if(curList[i].date==curDotObj.date)
+                {
+                    low = curList[i].low
+                }
+                if(curList[i].date==lastDotObj.date)
+                {
+                    high = curList[i].high
+                }
+            }
+        }
+        half = parseFloat((high + low) / 2).toFixed(2)
+        var halfPricePy = ((maxIndex - half / parseFloat(latticeValue)) * space);
+        contextK.save();
+        contextK.strokeStyle = 'yellow'
+        contextK.fillStyle = 'black'
+        contextK.beginPath()
+        contextK.lineWidth = 1
+        contextK.moveTo(offsetXSpace, halfPricePy)
+        contextK.lineTo(spaceX * xIndex, halfPricePy)
+        contextK.stroke();
+        contextK.fillText(half, spaceX * xIndex - spaceX * 8, halfPricePy);
+        contextK.restore();
+    }
+
     //获取点数图维斯波数据
 
     var waveDotList = [];
@@ -1031,6 +1103,9 @@ function DrawKLine(curList, stockInfo)
     var dateSortObj = dotDateSortList[dotIndex];
     var dotIsUp = dateSortObj.isUp;
     var curVolume = 0;
+    var lastOpen = curList[0].open;
+    var maxPercent = 0;
+    var maxSpeed = 0;
     //var rate = 0.01;
     for (var i = 0; i < curList.length; i++)
     {
@@ -1044,9 +1119,17 @@ function DrawKLine(curList, stockInfo)
         var date = dateSortObj.date;
         if (item.date == date)
         {
+            curVolume = 0;
+            lastOpen = item.open;
             //rate = rate + Math.abs(item.close / preItem.close - 1);
             curVolume = parseInt(curVolume) + parseInt(item.volume);
+            curPercent = Math.abs(parseFloat(item.close) / parseFloat(lastOpen) - 1)
+            curSpeed = curVolume / (curPercent * 100)
             var obj = {
+                close: item.close,
+                open: item.open,
+                percent: curPercent,
+                speed: curSpeed,
                 volume: curVolume,
                 isUp: dotIsUp
             }
@@ -1066,14 +1149,27 @@ function DrawKLine(curList, stockInfo)
             {
                 maxWaveDotVol = curVolume;
             }
-            curVolume = 0;
+            if (curPercent > maxPercent)
+            {
+                maxPercent = curPercent;
+            }
+            if (curSpeed > maxSpeed)
+            {
+                maxSpeed = curSpeed;
+            }
         }
         else
         {
             //涨跌的第一个点
             //rate = Math.abs(item.close / preItem.close - 1);
             curVolume = parseInt(curVolume) + parseInt(item.volume);
+            curPercent = Math.abs(parseFloat(item.close) / parseFloat(lastOpen) - 1)
+            curSpeed = curVolume / (curPercent * 100)
             var obj = {
+                close: item.close,
+                open: lastOpen,
+                percent: curPercent,
+                speed: curSpeed,
                 volume: curVolume,
                 isUp: dotIsUp
             }
@@ -1085,6 +1181,14 @@ function DrawKLine(curList, stockInfo)
             if (curVolume > maxWaveDotVol)
             {
                 maxWaveDotVol = curVolume;
+            }
+            if (curPercent > maxPercent)
+            {
+                maxPercent = curPercent;
+            }
+            if (curSpeed > maxSpeed)
+            {
+                maxSpeed = curSpeed;
             }
         }
     }
@@ -1227,7 +1331,117 @@ function DrawKLine(curList, stockInfo)
 
     }
 
+    var rsStartpy = space * rsIndex + sdStartpy;
 
+    //绘制真实波幅 真实波幅=高点-底点
+    var minValue = 10000000000;
+    var maxValue = 0;
+    for (var i = 0; i < curList.length; i++)
+    {
+        var item = curList[i];
+        var value = item.high - item.low;
+        if (value > maxValue)
+        {
+            maxValue = value;
+        }
+        if (value < minValue)
+        {
+            minValue = value;
+        }
+    }
+    for (var i = 0; i < curList.length; i++)
+    {
+        var item = curList[i];
+        var preItem = curList[i];
+        if (i > 0)
+        {
+            preItem = curList[i - 1];
+        }
+        var startpx = (i + 0.1) * spaceX + offsetXSpace;
+        var value = item.high - item.low;
+        var endpy = rsStartpy - space * 1 / 10 + rsIndex * space;
+        //var percent = (value - minValue) / (maxValue - minValue);
+        var percent = (value) / (maxValue);
+
+        var startpy = endpy - percent * ((rsIndex - 1 / 10) * space);
+        contextK.save();
+        if (parseFloat(item.close) >= parseFloat(preItem.close))
+        {
+            contextK.fillStyle = 'OrangeRed';
+        }
+        else
+        {
+            contextK.fillStyle = 'SlateBlue';
+        }
+        var pyheight = endpy - startpy;
+        contextK.fillRect(startpx, startpy, spaceX * 0.8, pyheight);
+        contextK.restore();
+
+    }
+
+    //绘制波段涨跌幅
+    var accPercentStartpy = rsStartpy + rsIndex * space;
+
+    contextK.save();
+    for (var i = 0; i < waveDotList.length; i++)
+    {
+        var dot = waveDotList[i]
+        var percent = (dot.percent) / (maxPercent);
+        var endpy = accPercentStartpy + accPercentIndex * space
+        var startpy = endpy - percent * ((accPercentIndex - 1 / 10) * space);
+        var pyheight = endpy - startpy;
+        var startpx = (i + 0.1) * spaceX + offsetXSpace;
+        if (dot.isUp)
+        {
+            contextK.fillStyle = 'OrangeRed';
+        }
+        else
+        {
+            contextK.fillStyle = 'SlateBlue';
+        }
+        if (isKline)
+        {
+            contextK.fillRect(startpx, startpy, spaceX * 0.8, pyheight);
+        }
+        else
+        {
+            contextK.lineWidth = 2;
+            contextK.fillRect(startpx + 0.399 * spaceX, startpy, contextK.lineWidth, pyheight);
+        }
+    }
+    contextK.restore();
+
+    //绘制波段涨跌速
+    var accSpeedStartpy = accPercentStartpy + accPercentIndex * space;
+
+    contextK.save();
+    for (var i = 0; i < waveDotList.length; i++)
+    {
+        var dot = waveDotList[i]
+        var percent = (dot.speed) / (maxSpeed);
+        var endpy = accSpeedStartpy + accSpeedIndex * space
+        var startpy = endpy - percent * ((accSpeedIndex - 1 / 10) * space);
+        var pyheight = endpy - startpy;
+        var startpx = (i + 0.1) * spaceX + offsetXSpace;
+        if (dot.isUp)
+        {
+            contextK.fillStyle = 'OrangeRed';
+        }
+        else
+        {
+            contextK.fillStyle = 'SlateBlue';
+        }
+        if (isKline)
+        {
+            contextK.fillRect(startpx, startpy, spaceX * 0.8, pyheight);
+        }
+        else
+        {
+            contextK.lineWidth = 2;
+            contextK.fillRect(startpx + 0.399 * spaceX, startpy, contextK.lineWidth, pyheight);
+        }
+    }
+    contextK.restore();
 
     // 选择默认的tab页
     var titles = document.getElementById('tab-header').getElementsByTagName('li')
