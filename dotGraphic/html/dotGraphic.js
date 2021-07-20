@@ -561,31 +561,49 @@ function DrawKLine(curList, stockInfo)
         //设置文本的垂直对齐方式
         contextK.textAlign = 'left';
         var volumeStartpy = space * yIndex + space * dateIndex;
+        var leftTitleIndex = 1.5
         contextK.fillText(" 成交量", spaceX * xIndex, volumeStartpy + volumeIndex * space / 2);
+        contextK.fillText(" 成交量", spaceX * leftTitleIndex, volumeStartpy + volumeIndex * space / 2);
+
         var waveStartpy = volumeStartpy + volumeIndex * space;
         if(waveIndex > 0)
         {
             contextK.fillText(" 常规维斯波", spaceX * xIndex, waveStartpy + waveIndex * space / 2);
+            contextK.fillText(" 常规维斯波", spaceX * leftTitleIndex, waveStartpy + waveIndex * space / 2);
+
         }
         var waveDotStartpy = waveStartpy + waveIndex * space;
         contextK.fillText(" 点数维斯波", spaceX * xIndex, waveDotStartpy + waveDotIndex * space / 2);
+        contextK.fillText(" 点数维斯波", spaceX * leftTitleIndex, waveDotStartpy + waveDotIndex * space / 2);
         var sdStartpy = waveDotStartpy + waveDotIndex * space;
         contextK.fillText(" 供需指数", spaceX * xIndex, sdStartpy + sdIndex * space / 2);
+        contextK.fillText(" 供需指数", spaceX * leftTitleIndex, sdStartpy + sdIndex * space / 2);
         contextK.fillText(" 振幅/量", spaceX * xIndex, sdStartpy + sdIndex * space / 2 + space);
+        contextK.fillText(" 振幅/量", spaceX * leftTitleIndex, sdStartpy + sdIndex * space / 2 + space);
         var rsStartpy = sdStartpy + sdIndex * space;
         if(rsIndex>0)
         {
             contextK.fillText(" 真实波幅", spaceX * xIndex, rsStartpy + rsIndex * space / 2);
             contextK.fillText(" 量大价小SOT", spaceX * xIndex, rsStartpy + rsIndex * space / 2 + space);
             contextK.fillText(" 量小价大延续", spaceX * xIndex, rsStartpy + rsIndex * space / 2 + space + space);
+
+            contextK.fillText(" 真实波幅", spaceX * leftTitleIndex, rsStartpy + rsIndex * space / 2);
+            contextK.fillText(" 量大价小SOT", spaceX * leftTitleIndex, rsStartpy + rsIndex * space / 2 + space);
+            contextK.fillText(" 量小价大延续", spaceX * leftTitleIndex, rsStartpy + rsIndex * space / 2 + space + space);
         }
         var accPercentStartpy = rsStartpy + rsIndex * space;
         contextK.fillText(" 波段涨跌幅", spaceX * xIndex, accPercentStartpy + accPercentIndex * space / 2 + space);
+        contextK.fillText(" 波段涨跌幅", spaceX * leftTitleIndex, accPercentStartpy + accPercentIndex * space / 2 + space);
         var accSpeedStartpy = accPercentStartpy + accPercentIndex * space;
         contextK.fillText(" 波段涨跌速", spaceX * xIndex, accSpeedStartpy + accSpeedIndex * space / 2);
         contextK.fillText(" 量/涨跌幅", spaceX * xIndex, accSpeedStartpy + accSpeedIndex * space / 2 + space);
+
+        contextK.fillText(" 波段涨跌速", spaceX * leftTitleIndex, accSpeedStartpy + accSpeedIndex * space / 2);
+        contextK.fillText(" 量/涨跌幅", spaceX * leftTitleIndex, accSpeedStartpy + accSpeedIndex * space / 2 + space);
+
         var compareStartpy = accSpeedStartpy + accSpeedIndex * space;
         contextK.fillText(" 相对强弱", spaceX * xIndex, compareStartpy + compareIndex * space / 2);
+        contextK.fillText(" 相对强弱", spaceX * leftTitleIndex, compareStartpy + compareIndex * space / 2);
 
         // code name
         // var str1 = stockInfo.code + "           " + stockInfo.name;
