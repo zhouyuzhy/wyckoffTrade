@@ -2733,85 +2733,85 @@ function fillInfo()
         var strHtml = codename + dateStr + priceNowStr + priceStr + rateStr + profit;
         document.getElementById("baseInfo").innerHTML = strHtml;
 
-        var iwc = "http://www.iwencai.com/unifiedwap/result?w=" + code + "&querytype=stock&issugs"
-        //var sl = "https://m.xuangubao.cn/stocklabel/" + code + "." + (type == "sh" ? "ss" : "sz") + "?mine=true"
-        var dfcf = "http://quote.eastmoney.com/" + type + code + ".html"
-        var xgb = "https://xuangubao.cn/stock/" + code + (type == "sh" ? ".SS" : ".SZ");
-        var xq = "https://xueqiu.com/S/" + type.toUpperCase() + code;
-        var sl1 = "https://api-ddc-wscn.xuangubao.cn/extract/stock_risk/full_desc?stock_code=" + code + (type == "sh" ? ".ss" : ".sz");
-        var indexList = ["000001", "399001", "399006", "399005", "000300"];
-        var codeNew = code;
-        if (indexList.indexOf(code) > -1)
-        {
-            codeNew = type + code;
-        }
-        var jrj = "http://stock.jrj.com.cn/share," + codeNew + ".shtml";
-        document.getElementById("iwc").href = iwc;
-        document.getElementById("dfcf").href = dfcf;
-        document.getElementById("xgb").href = xgb;
-        //document.getElementById("sl").href = sl;
-        document.getElementById("xq").href = xq;
-        document.getElementById("jrj").href = jrj;
-
-        return getUrlContent("GET", sl1, "json").then(function(jsonStr)
-        {
-            if (jsonStr == null || jsonStr == "")
-            {
-                //alert("未获取到数据,请检查网络连接状况或者浏览器是否允许跨域访问!");
-                return;
-            }
-            //console.log(jsonStr);
-            if (jsonStr.message == "OK")
-            {
-                var risk_level = jsonStr.data.risk_level;
-                switch (risk_level)
-                {
-                    case 0:
-                        risk_level = "<a style=\"color:green\">风险级别：安全";
-                        break;
-                    case 1:
-                        risk_level = "<a style=\"color:#ff7575;background-color:yellow;font-weight:bold\">风险级别：低风险";
-                        break;
-                    case 2:
-                        risk_level = "<a style=\"color:#FF5151;background-color:yellow;font-weight:bold\">风险级别：中风险";
-                        break;
-                    case 3:
-                        risk_level = "<a style=\"color:red;background-color:yellow;font-weight:bold\">风险级别：高风险";
-                        break;
-
-                }
-                var html = "<a>星级：" + jsonStr.data.stars + "</a>" +
-                    risk_level + "</a></br>" +
-                    "<a style=\"color:red\">危险项：" + jsonStr.data.risk_count + "</a>" +
-                    "<a style=\"color:green\">安全项：" + jsonStr.data.safe_count + "</a>"
-                $('#riskAssessment').html("");
-                $('#riskAssessment').append(html);
-                var htmlTable = "<table id=\"riskInfoTable\"><tr><th>星级</th><th>权重</th><th>类别</th><th>结论</th><th>描述</th></tr>";
-                for (var i = 0; i < jsonStr.data.items.length; i++)
-                {
-                    var item = jsonStr.data.items[i];
-                    var tr = "<tr>";
-                    var str = item["risk_name"];
-                    var reg1 = RegExp(/退市风险/);
-                    var reg2 = RegExp(/公司负面消息/);
-                    var reg3 = RegExp(/监管处罚/);
-                    if ((str.match(reg1) || str.match(reg2) || str.match(reg3) || parseInt(item["stars"]) > 0) && item["title"] != "无")
-                    {
-                        tr = "<tr style=\"color:red;font-weight:bold\">";
-                        htmlTable = htmlTable + tr +
-                            "<th>" + item["stars"] + "</th>" +
-                            "<th>" + item["weight"] + "</th>" +
-                            "<th>" + item["risk_name"] + "</th>" +
-                            "<th>" + item["title"] + "</th>" +
-                            "<th>" + item["description"] + "</th>" +
-                            "</tr>"
-                    }
-
-                }
-                htmlTable = htmlTable + "</table>";
-                $('#riskAssessment').append(htmlTable);
-            }
-        });
+//        var iwc = "http://www.iwencai.com/unifiedwap/result?w=" + code + "&querytype=stock&issugs"
+//        //var sl = "https://m.xuangubao.cn/stocklabel/" + code + "." + (type == "sh" ? "ss" : "sz") + "?mine=true"
+//        var dfcf = "http://quote.eastmoney.com/" + type + code + ".html"
+//        var xgb = "https://xuangubao.cn/stock/" + code + (type == "sh" ? ".SS" : ".SZ");
+//        var xq = "https://xueqiu.com/S/" + type.toUpperCase() + code;
+//        var sl1 = "https://api-ddc-wscn.xuangubao.cn/extract/stock_risk/full_desc?stock_code=" + code + (type == "sh" ? ".ss" : ".sz");
+//        var indexList = ["000001", "399001", "399006", "399005", "000300"];
+//        var codeNew = code;
+//        if (indexList.indexOf(code) > -1)
+//        {
+//            codeNew = type + code;
+//        }
+//        var jrj = "http://stock.jrj.com.cn/share," + codeNew + ".shtml";
+//        document.getElementById("iwc").href = iwc;
+//        document.getElementById("dfcf").href = dfcf;
+//        document.getElementById("xgb").href = xgb;
+//        //document.getElementById("sl").href = sl;
+//        document.getElementById("xq").href = xq;
+//        document.getElementById("jrj").href = jrj;
+//
+//        return getUrlContent("GET", sl1, "json").then(function(jsonStr)
+//        {
+//            if (jsonStr == null || jsonStr == "")
+//            {
+//                //alert("未获取到数据,请检查网络连接状况或者浏览器是否允许跨域访问!");
+//                return;
+//            }
+//            //console.log(jsonStr);
+//            if (jsonStr.message == "OK")
+//            {
+//                var risk_level = jsonStr.data.risk_level;
+//                switch (risk_level)
+//                {
+//                    case 0:
+//                        risk_level = "<a style=\"color:green\">风险级别：安全";
+//                        break;
+//                    case 1:
+//                        risk_level = "<a style=\"color:#ff7575;background-color:yellow;font-weight:bold\">风险级别：低风险";
+//                        break;
+//                    case 2:
+//                        risk_level = "<a style=\"color:#FF5151;background-color:yellow;font-weight:bold\">风险级别：中风险";
+//                        break;
+//                    case 3:
+//                        risk_level = "<a style=\"color:red;background-color:yellow;font-weight:bold\">风险级别：高风险";
+//                        break;
+//
+//                }
+//                var html = "<a>星级：" + jsonStr.data.stars + "</a>" +
+//                    risk_level + "</a></br>" +
+//                    "<a style=\"color:red\">危险项：" + jsonStr.data.risk_count + "</a>" +
+//                    "<a style=\"color:green\">安全项：" + jsonStr.data.safe_count + "</a>"
+//                $('#riskAssessment').html("");
+//                $('#riskAssessment').append(html);
+//                var htmlTable = "<table id=\"riskInfoTable\"><tr><th>星级</th><th>权重</th><th>类别</th><th>结论</th><th>描述</th></tr>";
+//                for (var i = 0; i < jsonStr.data.items.length; i++)
+//                {
+//                    var item = jsonStr.data.items[i];
+//                    var tr = "<tr>";
+//                    var str = item["risk_name"];
+//                    var reg1 = RegExp(/退市风险/);
+//                    var reg2 = RegExp(/公司负面消息/);
+//                    var reg3 = RegExp(/监管处罚/);
+//                    if ((str.match(reg1) || str.match(reg2) || str.match(reg3) || parseInt(item["stars"]) > 0) && item["title"] != "无")
+//                    {
+//                        tr = "<tr style=\"color:red;font-weight:bold\">";
+//                        htmlTable = htmlTable + tr +
+//                            "<th>" + item["stars"] + "</th>" +
+//                            "<th>" + item["weight"] + "</th>" +
+//                            "<th>" + item["risk_name"] + "</th>" +
+//                            "<th>" + item["title"] + "</th>" +
+//                            "<th>" + item["description"] + "</th>" +
+//                            "</tr>"
+//                    }
+//
+//                }
+//                htmlTable = htmlTable + "</table>";
+//                $('#riskAssessment').append(htmlTable);
+//            }
+//        });
     }
     else
     {

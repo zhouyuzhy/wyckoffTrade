@@ -157,18 +157,28 @@
         </div>
     </div>
     <div id="info">基本信息
-        <div id="baseInfo" style="color: red;font-size: 12px"></div>
-        <div id="links">相关链接</br>
-            <a id="iwc" href="#" target="_blank">i问财</a>
-            <a id="dfcf" href="#" target="_blank">东方财富</a></br>
-            <a id="xgb" href="#" target="_blank">选股宝</a>
-            <!--a id="sl" href="#" target="_blank">扫雷</a-->
-            <a id="jrj" href="#" target="_blank">金融界</a>
-            <a id="xq" href="#" target="_blank">雪球</a></br>
-            <strong style="color: black;font-size: 18px">风险评估(来自选股宝)</strong>
+        <div id="baseInfo" style="color: red;font-size: 12px"></div><br/><br/>
+        <div id="cal_step">
+        <div style="font-size: 15px">威科夫风险评估</div>
+            <div id="tr_scope" style="font-size: 10px">
+                0、压力评估<br/>
+                阻力位:<input type="number" id="tr_pressure_value" min="0.01" max="100000" step="0.01" /><br/>
+                支撑位:<input type="number" id="tr_support_value" min="0.01" max="100000" step="0.01" /><br/><br/>
+                1、价格、成交量<br/>
+                1.1、三高量增、三低量增，趋势持续<br/>
+                1.2、量减、蜡烛小，需求/供应耗尽<br/><br/>
+                2、点数图:止盈/止损>=3<br/>
+                2.1、止损点数<br/>
+                2.2、止盈点数<br/>
+                2.3、止盈/止损<br/><br/>
+                3、常规维斯波：无需求上涨、无供应回落<br/><br/>
+                4、查看点数维斯波、波段涨跌幅、波段涨跌速、速度指数，共同确认波段供应耗尽、波段需求耗尽<br/><br/>
+                5、查看供需指数、成交量、真实波幅，值越小，量越大、波幅越小，努力没结果，SOT行为<br/><br/>
+                6、查看相对强弱，20天内强于大盘天数更多<br/><br/>
+            </div>
         </div>
-        <div id="riskAssessment"></div>
     </div>
+
     <script type="text/javascript">
     var curLiId;
     window.onload = function()
