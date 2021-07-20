@@ -32,6 +32,9 @@
     var name;
     var code;
     var type;
+    var compareCode;
+    var compareType;
+    var compareName;
     var isOnline = false;
     var keypairFileList = {};
     var canvasD;
@@ -45,7 +48,9 @@
     var beginDate;
     var endDate;
     var curList;
-    var curDataList;
+    var curDataList=[];
+    var curCompareList;
+    var curCompareDataList=[];
     var isKline;
     var lineWidth = 1;
     var cycle;
@@ -431,7 +436,9 @@ function DrawKLine(curList, stockInfo)
     var accPercentIndex = 3;
     //点数图为标准的涨跌速
     var accSpeedIndex = 3;
-    var sumIndex = offsetYL + dateIndex + volumeIndex + waveIndex + waveDotIndex + sdIndex + rsIndex + accPercentIndex + accSpeedIndex;
+    //对比强弱
+    var compareIndex = 3;
+    var sumIndex = offsetYL + dateIndex + volumeIndex + waveIndex + waveDotIndex + sdIndex + rsIndex + accPercentIndex + accSpeedIndex + compareIndex;
     space = minSpace * scale;
 
     //字体
@@ -577,6 +584,8 @@ function DrawKLine(curList, stockInfo)
         var accSpeedStartpy = accPercentStartpy + accPercentIndex * space;
         contextK.fillText(" 波段涨跌速", spaceX * xIndex, accSpeedStartpy + accSpeedIndex * space / 2);
         contextK.fillText(" 量/涨跌幅", spaceX * xIndex, accSpeedStartpy + accSpeedIndex * space / 2 + space);
+        var compareStartpy = accSpeedStartpy + accSpeedIndex * space;
+        contextK.fillText(" 相对强弱", spaceX * xIndex, compareStartpy + compareIndex * space / 2);
 
         // code name
         // var str1 = stockInfo.code + "           " + stockInfo.name;
@@ -1123,7 +1132,7 @@ function DrawKLine(curList, stockInfo)
             //rate = rate + Math.abs(item.close / preItem.close - 1);
             curVolume = parseInt(curVolume) + parseInt(item.volume);
             curPercent = Math.abs(parseFloat(item.close) / parseFloat(lastOpen) - 1)
-            curSpeed = curVolume / (curPercent * 100)
+            curSpeed = curPercent===0?0:curVolume / (curPercent * 100)
             var obj = {
                 close: item.close,
                 open: item.open,
@@ -1165,7 +1174,7 @@ function DrawKLine(curList, stockInfo)
             //rate = Math.abs(item.close / preItem.close - 1);
             curVolume = parseInt(curVolume) + parseInt(item.volume);
             curPercent = Math.abs(parseFloat(item.close) / parseFloat(lastOpen) - 1)
-            curSpeed = curVolume / (curPercent * 100)
+            curSpeed = curPercent === 0 ? 0 :(curVolume / (curPercent * 100));
             var obj = {
                 close: item.close,
                 open: lastOpen,
@@ -1448,6 +1457,10 @@ function DrawKLine(curList, stockInfo)
     }
     contextK.restore();
 
+    //绘制相对强弱
+    var compareStartpy = accSpeedStartpy + accSpeedIndex * space;
+    drawCompare(curList, compareStartpy, compareIndex, spaceX, offsetXSpace)
+
     // 选择默认的tab页
     var titles = document.getElementById('tab-header').getElementsByTagName('li')
     for (var i = 0; i < titles.length; i++)
@@ -1473,6 +1486,95 @@ function DrawKLine(curList, stockInfo)
         }
     }
     fillInfo();
+}
+function drawCompare(curList, compareStartpy, compareIndex, spaceX, offsetXSpace)
+{
+    getOnlineData(compareCode, compareType, curCompareDataList).then(function(result)
+    {
+    curCompareList =  []
+    compareResultList = []
+    var maxValue = 0;
+    var minValue = 1000000;
+    // 解析result
+    var reg = new RegExp('-', "g");
+    for (var i = 0; i < result.length; i++)
+    {
+        var data = result[i].split(",");
+        if (data[0] == "")
+        {
+            continue;
+        }
+        //日期,股票代码,名称,收盘价,最高价,最低价,开盘价,前收盘,成交量,成交金额
+        var item = {
+            date: data[0].replace(reg, ''),
+            close: parseFloat(data[3]),
+            high: parseFloat(data[4]),
+            low: parseFloat(data[5]),
+            open: parseFloat(data[6]),
+            lastClose: parseFloat(data[7]),
+            volume: data[8],
+            amount: parseFloat(data[9]),
+            turnoverRate: parseFloat(data[10])
+        };
+        curCompareList.push(item);
+    }
+
+    for(i=0; i<curList.length;i++)
+    {
+        var result = {};
+        if(i > curCompareList.length - 1)
+        {
+            result.value=0;
+            result.color=0;
+            compareResultList.push(result);
+            continue;
+        }
+        curObj = curList[i]
+        compareObj = curCompareList[i]
+        result.value = (curObj.close / curObj.open) / (compareObj.close / compareObj.open) - 1
+        result.color = result.value > 0;
+        compareResultList.push(result);
+        if(result.value>maxValue)
+        {
+            maxValue = result.value
+        }
+        if(result.value<=minValue)
+        {
+            minValue = result.value
+        }
+    }
+    contextK.save();
+    // 为将对比负值正化，所有值对标加2倍最小值的绝对值
+    drawMaxValue = maxValue + 2 * Math.abs(minValue)
+    drawMinValue = minValue + 2 * Math.abs(minValue)
+    var endpy = compareStartpy + space * compareIndex;
+    for (var i = 0; i < compareResultList.length; i++)
+    {
+        var dot = compareResultList[i]
+        var percent = (dot.value + 2 * Math.abs(minValue)) / (drawMaxValue);
+        var startpy = endpy - percent * ((compareIndex - 1 / 10) * space);
+        var pyheight = endpy - startpy;
+        var startpx = (i + 0.1) * spaceX + offsetXSpace;
+        if (dot.color)
+        {
+            contextK.fillStyle = 'OrangeRed';
+        }
+        else
+        {
+            contextK.fillStyle = 'SlateBlue';
+        }
+        if (isKline)
+        {
+            contextK.fillRect(startpx, startpy, spaceX * 0.8, pyheight);
+        }
+        else
+        {
+            contextK.lineWidth = 2;
+            contextK.fillRect(startpx + 0.399 * spaceX, startpy, contextK.lineWidth, pyheight);
+        }
+    }
+    contextK.restore();
+    });
 }
 //获取价格对应的单格值
 function CalLatticeValue(basePrice)
@@ -2758,6 +2860,7 @@ function generate()
         alert("请输入股票代码");
         return;
     }
+    compareCode = document.getElementById("code_input_compare").value;
     dotInterval = 1;
     latticeValue = document.getElementById("latticeValue").value;
     latticeValue = latticeValue == "" ? 0 : latticeValue;
@@ -2866,6 +2969,9 @@ function generate()
     var obj = stockArray[code];
     name = obj[1];
     type = obj[3];
+    var compareObj = stockArray[compareCode];
+    compareName = compareObj[1];
+    compareType = compareObj[3];
     DrawOX();
     document.getElementById("btGenerate").focus();
 };
@@ -2950,8 +3056,13 @@ function getUrlContent(method, url, responseType)
     })
 }
 
-function getOnlineData()
+function getOnlineData(queryCode, queryType)
 {
+    if(!queryCode)
+    {
+        queryCode = code
+        queryType = type
+    }
     var len = 250;
     if (dataSource == "新浪")
     {
@@ -2976,7 +3087,7 @@ function getOnlineData()
         {
             klt = parseInt(cycle.replace('分钟', ''))
         }
-        var url = "http://money.finance.sina.com.cn/quotes_service/api/json_v2.php/CN_MarketData.getKLineData?symbol=" + type + code + "&scale=" + klt + "&ma=no&datalen=" + len;
+        var url = "http://money.finance.sina.com.cn/quotes_service/api/json_v2.php/CN_MarketData.getKLineData?symbol=" + queryType + queryCode + "&scale=" + klt + "&ma=no&datalen=" + len;
 
         return getUrlContent("GET", url, "json").then(function(result)
         {
@@ -3026,13 +3137,13 @@ function getOnlineData()
             klt = parseInt(cycle.replace('分钟', ''))
         }
 
-        var typeNum = (type == "sh" ? "1" : "0");
-        typeNum = (type == "HK" ? "116" : typeNum);
-        typeNum = (type == "HKI" ? "100" : typeNum);
-        typeNum = (type == "HTI" ? "124" : typeNum);
+        var typeNum = (queryType == "sh" ? "1" : "0");
+        typeNum = (queryType == "HK" ? "116" : typeNum);
+        typeNum = (queryType == "HKI" ? "100" : typeNum);
+        typeNum = (queryType == "HTI" ? "124" : typeNum);
         //var url = "http://push2his.eastmoney.com/api/qt/stock/kline/get?cb=jQuery&secid=" + typeNum + "." + code + "&fields1=f1%2Cf2%2Cf3%2Cf4%2Cf5&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf61&klt=" + klt + "&fqt=" + rehabilitation + "&beg=" + beginDate + "&end=" + endDate;
         //去掉cb=jQuery 得到json
-        var url = "http://push2his.eastmoney.com/api/qt/stock/kline/get?&secid=" + typeNum + "." + code + "&fields1=f1%2Cf2%2Cf3%2Cf4%2Cf5&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf61&klt=" + klt + "&fqt=" + rehabilitation + "&beg=" + beginDate + "&end=" + endDate;
+        var url = "http://push2his.eastmoney.com/api/qt/stock/kline/get?&secid=" + typeNum + "." + queryCode + "&fields1=f1%2Cf2%2Cf3%2Cf4%2Cf5&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf61&klt=" + klt + "&fqt=" + rehabilitation + "&beg=" + beginDate + "&end=" + endDate;
         return getUrlContent("GET", url, "text").then(function(result)
         {
             if (result == null || result == "")

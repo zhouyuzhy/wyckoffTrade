@@ -105,6 +105,7 @@
         <input name='highLowConnect' type="checkbox" id="highLowConnect" checked="checked"/><label title="">连接高低点</label><br />
         <label><input id="kline_g" name="lineType" type="radio" checked="checked" value="1" />K线图</label>
         <label><input id="bamboo_g" name="lineType" type="radio" value="0" />竹线图</label> <br />
+        <a style="color:red">相对强弱：</a><input id="code_input_compare" type="text" list="stock_list_self" name="ss" value="HSI" onFocus="if (value !=''){value =''}" onBlur="if (value ==''){value='请输入股票代码'}" autocomplete="off" style="ime-mode:disabled" />
         <button type="button" id="btGenerate" onclick="
         scale=1;
         generate();
