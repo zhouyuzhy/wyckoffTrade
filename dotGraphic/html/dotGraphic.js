@@ -1518,6 +1518,7 @@ function drawCompare(curList, compareStartpy, compareIndex, spaceX, offsetXSpace
         };
         curCompareList.push(item);
     }
+    curCompareList.reverse()
 
     for(i=0; i<curList.length;i++)
     {
