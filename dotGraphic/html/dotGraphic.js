@@ -1120,8 +1120,6 @@ function DrawKLine(curList, stockInfo)
         var date = dateSortObj.date;
         if (item.date == date)
         {
-            curVolume = 0;
-            lastOpen = item.open;
             //rate = rate + Math.abs(item.close / preItem.close - 1);
             curVolume = parseInt(curVolume) + parseInt(item.volume);
             curPercent = Math.abs(parseFloat(item.close) / parseFloat(lastOpen) - 1)
@@ -1158,6 +1156,8 @@ function DrawKLine(curList, stockInfo)
             {
                 maxSpeed = curSpeed;
             }
+            curVolume = 0;
+            lastOpen = item.open;
         }
         else
         {
@@ -1226,7 +1226,7 @@ function DrawKLine(curList, stockInfo)
                     contextK.moveTo(lastDot.px, lastDot.lowpx)
                     contextK.lineTo(px, highpx)
                     contextK.stroke()
-                    contextK.fillText(parseFloat(waveDotList[i].speed / 10000).toFixed(2), px, highpx - 1.5 * space)
+                    contextK.fillText(parseFloat(waveDotList[i].speed / 10000).toFixed(2), px, highpx - 0.5 * space)
                     contextK.restore()
                 }
                 else
@@ -1235,7 +1235,7 @@ function DrawKLine(curList, stockInfo)
                     contextK.moveTo(lastDot.px, lastDot.highpx)
                     contextK.lineTo(px, lowpx)
                     contextK.stroke()
-                    contextK.fillText(parseFloat(waveDotList[i].speed / 10000).toFixed(2), px, lowpx + space)
+                    contextK.fillText(parseFloat(waveDotList[i].speed / 10000).toFixed(2), px, lowpx + 0.5*space)
                     contextK.restore()
                 }
 
