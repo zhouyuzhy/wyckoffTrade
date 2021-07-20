@@ -425,7 +425,7 @@ function DrawKLine(curList, stockInfo)
     //成交量占据格数
     var volumeIndex = 3;
     //维斯波占格
-    var waveIndex = 0;
+    var waveIndex = 3;
     //点数图为标准的维斯波占格
     var waveDotIndex = 3;
     //供需指数占格

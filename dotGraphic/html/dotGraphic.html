@@ -140,7 +140,7 @@
                 <div class="dom" id="dom" style="display: block;">
                     <ul>
                         <li id="likline">
-                            <canvas id="kline" style="overflow: auto;"></canvas>
+                            <canvas id="kline" style="overflow:auto;"></canvas>
                         </li>
                     </ul>
                 </div>
@@ -148,7 +148,7 @@
                 <div class="dom" id="dom">
                     <ul>
                         <li id="lidotGraphic">
-                            <canvas id="dotGraphic"></canvas>
+                            <canvas id="dotGraphic" style="overflow:auto;"></canvas>
                         </li>
                     </ul>
                 </div>
@@ -346,20 +346,20 @@
         }
     }
     //键盘监控
-    document.onkeydown = function(event)
-    {
-        var e = event || window.event || arguments.callee.caller.arguments[0];
-        if (e && e.keyCode == 38) //上键
-        {
-            scale = (scale * (1 + 0.1)).toFixed(2);
-            generate();
-        }
-        if (e && e.keyCode == 40) //下键
-        {
-            scale = (scale * (1 - 0.1)).toFixed(2);
-            generate();
-        }
-    }
+<!--    document.onkeydown = function(event)-->
+<!--    {-->
+<!--        var e = event || window.event || arguments.callee.caller.arguments[0];-->
+<!--        if (e && e.keyCode == 38) //上键-->
+<!--        {-->
+<!--            scale = (scale * (1 + 0.1)).toFixed(2);-->
+<!--            generate();-->
+<!--        }-->
+<!--        if (e && e.keyCode == 40) //下键-->
+<!--        {-->
+<!--            scale = (scale * (1 - 0.1)).toFixed(2);-->
+<!--            generate();-->
+<!--        }-->
+<!--    }-->
 
     var eventHandle = {
         getEvent: function(event)
@@ -387,28 +387,28 @@
         }
     }
     //鼠标监控
-    function mouseHandle(event)
-    {
-        event = eventHandle.getEvent(event);
-        var left = document.getElementById('left');
-        var right = document.getElementById('right');
-        if (event.pageX > left.offsetWidth && event.pageX < right.offsetWidth)
-        {
-            var delta = eventHandle.getWheelDelta(event);
-            deltaValue = parseFloat(delta / Math.abs(delta));
-            var interval = 0.05;
-            if (scale <= interval && deltaValue < 0)
-            {
-                interval = 0.01;
-            }
-            scale = (parseFloat(scale) + deltaValue * interval).toFixed(2);
-            if (scale < 0)
-            {
-                scale = 0.01;
-            }
-            generate();
-        }
-    }
+<!--    function mouseHandle(event)-->
+<!--    {-->
+<!--        event = eventHandle.getEvent(event);-->
+<!--        var left = document.getElementById('left');-->
+<!--        var right = document.getElementById('right');-->
+<!--        if (event.pageX > left.offsetWidth && event.pageX < right.offsetWidth)-->
+<!--        {-->
+<!--            var delta = eventHandle.getWheelDelta(event);-->
+<!--            deltaValue = parseFloat(delta / Math.abs(delta));-->
+<!--            var interval = 0.05;-->
+<!--            if (scale <= interval && deltaValue < 0)-->
+<!--            {-->
+<!--                interval = 0.01;-->
+<!--            }-->
+<!--            scale = (parseFloat(scale) + deltaValue * interval).toFixed(2);-->
+<!--            if (scale < 0)-->
+<!--            {-->
+<!--                scale = 0.01;-->
+<!--            }-->
+<!--            generate();-->
+<!--        }-->
+<!--    }-->
     //周期选择事件
     function cycleOnchange()
     {
