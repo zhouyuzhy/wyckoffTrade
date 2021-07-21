@@ -1548,9 +1548,18 @@ function drawCompare(curList, compareStartpy, compareIndex, spaceX, offsetXSpace
             compareResultList.push(result);
             continue;
         }
+        if(i == 0)
+        {
+            result.value=0;
+            result.color=0;
+            compareResultList.push(result);
+            continue;
+        }
         curObj = curList[i]
+        lastObj = curList[i-1]
         compareObj = curCompareList[i]
-        result.value = (curObj.close / curObj.open) / (compareObj.close / compareObj.open) - 1
+        lastCompareObj = curCompareList[i-1]
+        result.value = (curObj.close / lastObj.close) / (compareObj.close / lastCompareObj.close) - 1
         result.color = result.value > 0;
         compareResultList.push(result);
         if(result.value>maxValue)
