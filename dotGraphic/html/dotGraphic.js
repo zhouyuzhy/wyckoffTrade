@@ -3288,6 +3288,7 @@ function getOnlineData(queryCode, queryType)
         typeNum = (queryType == "HK" ? "116" : typeNum);
         typeNum = (queryType == "HKI" ? "100" : typeNum);
         typeNum = (queryType == "HTI" ? "124" : typeNum);
+        typeNum = (typeNum == "0" ? queryType : typeNum);
         //var url = "http://push2his.eastmoney.com/api/qt/stock/kline/get?cb=jQuery&secid=" + typeNum + "." + code + "&fields1=f1%2Cf2%2Cf3%2Cf4%2Cf5&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf61&klt=" + klt + "&fqt=" + rehabilitation + "&beg=" + beginDate + "&end=" + endDate;
         //去掉cb=jQuery 得到json
         var url = "http://push2his.eastmoney.com/api/qt/stock/kline/get?&secid=" + typeNum + "." + queryCode + "&fields1=f1%2Cf2%2Cf3%2Cf4%2Cf5&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf61&klt=" + klt + "&fqt=" + rehabilitation + "&beg=" + beginDate + "&end=" + endDate;

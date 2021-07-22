@@ -17,7 +17,7 @@
 </head>
 
 <body>
-    <div id="left">
+    <div id="left" style="overflow-y:auto;">
         <h4 style="text-align:center;margin-top: 10px;margin-bottom: 10px;">威科夫操盘工具</h4>
         <input type="file" style="display:none" webkitdirectory directory multiple name="file" id="filePicker" onchange="loadFileList()" accept="*" value="加载离线股票数据" />
         <label id="offlinel"><input id="offline" name="dataSource" type="radio" value="0" onchange="
@@ -125,6 +125,9 @@
                 input.style.display='none'
             }
         " /><label title="格值可以按照当前价格的比例计算,比例默认2%,可输入">格值比例(%)<input type="number" id="percentlatticeInput" min="1" max="100" step="1" value="1" style="display:none;width: 30px" /></label><br />
+        <div><input type="text" id="search_stock_text" style="width: 50px"/> <button onclick="searchStockInNewTab()" style="width: 50px">搜索</button></div>
+        <div><input type="text" id="add_stock_json_text" style="width: 50px"/> <button onclick="addStock()" style="width: 50px">添加</button></div>
+        <div id="stock_obj_value"></div>
     </div>
     <div id="right" style="align:center;overflow:auto">
         <div id="tab">
@@ -223,6 +226,17 @@
         {
             setInterval("IntervalFunc()", 60000);
         }
+    }
+    function searchStockInNewTab() {
+        var stockName = document.getElementById("search_stock_text").value
+        window.open('https://searchapi.eastmoney.com/api/suggest/get?cb=jQuery112408521774761285608_1626939454858&input='+stockName+'&type=14&token=D43BF722C8E33BDC906FB84D85E326E8&markettype=&mktnum=&jys=&classify=&securitytype=&status=&count=5&_=1626939454873', '_blank').focus();
+    }
+    function addStock(){
+        var stockJson = document.getElementById("add_stock_json_text").value;
+        var stock = JSON.parse(stockJson);
+        var fileContent = '["'+stock.Code+'","'+stock.Name+'","'+stock.PinYin+'","'+stock.MktNum+'",""],';
+        document.getElementById("stock_obj_value").innerHTML = fileContent;
+        window.copy(fileContent);
     }
     //时间间隔执行函数
     function IntervalFunc()
