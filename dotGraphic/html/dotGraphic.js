@@ -49,7 +49,7 @@
     var endDate;
     var curList;
     var curDataList=[];
-    var curCompareList;
+    var curCompareList=[];
     var curCompareDataList=[];
     var isKline;
     var lineWidth = 1;
@@ -437,8 +437,11 @@ function DrawKLine(curList, stockInfo)
     //点数图为标准的涨跌速
     var accSpeedIndex = 3;
     //对比强弱
-    var compareIndex = 3;
+    var compareIndex = 0;
+    //通用附图尺寸
+    var commonFigureIndex = 3;
     var sumIndex = offsetYL + dateIndex + volumeIndex + waveIndex + waveDotIndex + sdIndex + rsIndex + accPercentIndex + accSpeedIndex + compareIndex;
+    sumIndex = sumIndex + commonFigureIndex * 1;
     space = minSpace * scale;
 
     //字体
@@ -602,9 +605,14 @@ function DrawKLine(curList, stockInfo)
         contextK.fillText(" 量/涨跌幅", spaceX * leftTitleIndex, accSpeedStartpy + accSpeedIndex * space / 2 + space);
 
         var compareStartpy = accSpeedStartpy + accSpeedIndex * space;
+        if(compareIndex>0)
+        {
         contextK.fillText(" 相对强弱", spaceX * xIndex, compareStartpy + compareIndex * space / 2);
         contextK.fillText(" 相对强弱", spaceX * leftTitleIndex, compareStartpy + compareIndex * space / 2);
-
+        }
+        var compareAccStartpy = compareStartpy + compareIndex * space;
+        contextK.fillText(" 累积强弱", spaceX * xIndex, compareAccStartpy + commonFigureIndex * space / 2);
+        contextK.fillText(" 累积强弱", spaceX * leftTitleIndex, compareAccStartpy + commonFigureIndex * space / 2);
         // code name
         // var str1 = stockInfo.code + "           " + stockInfo.name;
         // var strWhith = contextD.measureText(str1).width;
@@ -1358,7 +1366,15 @@ function DrawKLine(curList, stockInfo)
             contextK.fillStyle = 'SlateBlue';
         }
         var pyheight = endpy - startpy;
-        contextK.fillRect(startpx, startpy, spaceX * 0.8, pyheight);
+        if (isKline)
+        {
+            contextK.fillRect(startpx, startpy, spaceX * 0.8, pyheight);
+        }
+        else
+        {
+            contextK.lineWidth = 2;
+            contextK.fillRect(startpx + 0.399 * spaceX, startpy, contextK.lineWidth, pyheight);
+        }
         contextK.restore();
 
     }
@@ -1406,7 +1422,15 @@ function DrawKLine(curList, stockInfo)
             contextK.fillStyle = 'SlateBlue';
         }
         var pyheight = endpy - startpy;
-        contextK.fillRect(startpx, startpy, spaceX * 0.8, pyheight);
+        if (isKline)
+        {
+            contextK.fillRect(startpx, startpy, spaceX * 0.8, pyheight);
+        }
+        else
+        {
+            contextK.lineWidth = 2;
+            contextK.fillRect(startpx + 0.399 * spaceX, startpy, contextK.lineWidth, pyheight);
+        }
         contextK.restore();
 
     }
@@ -1479,6 +1503,10 @@ function DrawKLine(curList, stockInfo)
     var compareStartpy = accSpeedStartpy + accSpeedIndex * space;
     drawCompare(curList, compareStartpy, compareIndex, spaceX, offsetXSpace)
 
+    //绘制累积强弱，最后一个收盘比第一个开盘
+    var compareAccStartpy = compareStartpy + compareIndex * space;
+    drawCompareAcc(curList, compareAccStartpy, commonFigureIndex, spaceX, offsetXSpace)
+
     // 选择默认的tab页
     var titles = document.getElementById('tab-header').getElementsByTagName('li')
     for (var i = 0; i < titles.length; i++)
@@ -1507,37 +1535,10 @@ function DrawKLine(curList, stockInfo)
 }
 function drawCompare(curList, compareStartpy, compareIndex, spaceX, offsetXSpace)
 {
-    getOnlineData(compareCode, compareType, curCompareDataList).then(function(result)
-    {
-    curCompareList =  []
-    compareResultList = []
-    var maxValue = 0;
-    var minValue = 1000000;
-    // 解析result
-    var reg = new RegExp('-', "g");
-    for (var i = 0; i < result.length; i++)
-    {
-        var data = result[i].split(",");
-        if (data[0] == "")
-        {
-            continue;
-        }
-        //日期,股票代码,名称,收盘价,最高价,最低价,开盘价,前收盘,成交量,成交金额
-        var item = {
-            date: data[0].replace(reg, ''),
-            close: parseFloat(data[3]),
-            high: parseFloat(data[4]),
-            low: parseFloat(data[5]),
-            open: parseFloat(data[6]),
-            lastClose: parseFloat(data[7]),
-            volume: data[8],
-            amount: parseFloat(data[9]),
-            turnoverRate: parseFloat(data[10])
-        };
-        curCompareList.push(item);
-    }
-    curCompareList.reverse()
 
+    var compareResultList = [];
+    var maxValue=0;
+    var minValue=10000000;
     for(i=0; i<curList.length;i++)
     {
         var result = {};
@@ -1548,7 +1549,7 @@ function drawCompare(curList, compareStartpy, compareIndex, spaceX, offsetXSpace
             compareResultList.push(result);
             continue;
         }
-        if(i == 0)
+        if(i==0)
         {
             result.value=0;
             result.color=0;
@@ -1556,10 +1557,8 @@ function drawCompare(curList, compareStartpy, compareIndex, spaceX, offsetXSpace
             continue;
         }
         curObj = curList[i]
-        lastObj = curList[i-1]
         compareObj = curCompareList[i]
-        lastCompareObj = curCompareList[i-1]
-        result.value = (curObj.close / lastObj.close) / (compareObj.close / lastCompareObj.close) - 1
+        result.value = (curObj.close / curObj.lastClose) / (compareObj.close / compareObj.lastClose) - 1
         result.color = result.value > 0;
         compareResultList.push(result);
         if(result.value>maxValue)
@@ -1602,7 +1601,91 @@ function drawCompare(curList, compareStartpy, compareIndex, spaceX, offsetXSpace
         }
     }
     contextK.restore();
-    });
+}
+function drawCompareAcc(curList, compareStartpy, compareIndex, spaceX, offsetXSpace)
+{
+    var maxValue=0;
+    var minValue=10000000;
+    var compareResultList = [];
+    for(i=0; i<curList.length;i++)
+    {
+        var result = {};
+        if(curList.length==0 || curCompareList.length==0)
+        {
+            result.value=0;
+            result.color=0;
+            compareResultList.push(result);
+            continue;
+        }
+        if(i==0)
+        {
+            result.value=0;
+            result.color=0;
+            compareResultList.push(result);
+            continue;
+        }
+        startOpen = curList[0].close;
+        startCompareOpen = curCompareList[0].close;
+        curObj = curList[i]
+        compareObj = curCompareList[i]
+        result.value = (curObj.close / startOpen) / (compareObj.close / startCompareOpen) - 1
+        result.color = result.value > 0;
+        compareResultList.push(result);
+        if(result.value>maxValue)
+        {
+            maxValue = result.value
+        }
+        if(result.value<=minValue)
+        {
+            minValue = result.value
+        }
+    }
+    contextK.save();
+    // 为将对比负值正化，所有值对标加2倍最小值的绝对值
+    drawMaxValue = maxValue + 2 * Math.abs(minValue)
+    drawMinValue = minValue + 2 * Math.abs(minValue)
+    var endpy = compareStartpy + space * compareIndex;
+    for (var i = 0; i < compareResultList.length; i++)
+    {
+        var dot = compareResultList[i]
+        var percent = (dot.value + 2 * Math.abs(minValue)) / (drawMaxValue);
+        var startpy = endpy - percent * ((compareIndex - 1 / 10) * space);
+        var pyheight = endpy - startpy;
+        var startpx = (i + 0.1) * spaceX + offsetXSpace;
+        if (dot.color)
+        {
+            contextK.fillStyle = 'OrangeRed';
+        }
+        else
+        {
+            contextK.fillStyle = 'SlateBlue';
+        }
+        if (isKline)
+        {
+            contextK.fillRect(startpx, startpy, spaceX * 0.8, pyheight);
+        }
+        else
+        {
+            contextK.lineWidth = 2;
+            contextK.fillRect(startpx + 0.399 * spaceX, startpy, contextK.lineWidth, pyheight);
+        }
+    }
+    contextK.restore();
+}
+function pressure_evaluate()
+{
+    code = document.getElementById("stock_list_self").options[0].value;
+    tr_pressure_value = document.getElementById("tr_pressure_value").value;
+    tr_support_value = document.getElementById("tr_support_value").value;
+//    drawPressureSupport(tr_pressure_value, tr_support_value);
+    if(!tr_pressure_value || !tr_support_value)
+    {
+        return;
+    }
+    var dot = curDataList[curDataList.length-1]
+    var obj = dot.item;
+    var close = obj.close;
+
 }
 //获取价格对应的单格值
 function CalLatticeValue(basePrice)
@@ -2330,7 +2413,13 @@ function ReadStockData()
     }
     else
     {
-        return getOnlineData();
+        //读取完大盘数据、再去获取自身数据
+
+        return getOnlineData(compareCode, compareType).then(function(result)
+        {
+            initCompareList(result);
+            return getOnlineData();
+        });
     }
 }
 //开始画图
@@ -2417,6 +2506,7 @@ function DrawOX()
     {
         ReadStockData().then(function(result)
         { //处理 result
+
             StartDraw(result);
             doc = document.getElementById("right");
             scrollBottomAndRightTag(doc)
@@ -2430,6 +2520,35 @@ function DrawOX()
         scrollBottomAndRightTag(doc)
     }
 
+}
+function initCompareList(result)
+{
+    var maxValue = 0;
+    var minValue = 1000000;
+    // 解析result
+    var reg = new RegExp('-', "g");
+    for (var i = 0; i < result.length; i++)
+    {
+        var data = result[i].split(",");
+        if (data[0] == "")
+        {
+            continue;
+        }
+        //日期,股票代码,名称,收盘价,最高价,最低价,开盘价,前收盘,成交量,成交金额
+        var item = {
+            date: data[0].replace(reg, ''),
+            close: parseFloat(data[3]),
+            high: parseFloat(data[4]),
+            low: parseFloat(data[5]),
+            open: parseFloat(data[6]),
+            lastClose: parseFloat(data[7]),
+            volume: data[8],
+            amount: parseFloat(data[9]),
+            turnoverRate: parseFloat(data[10])
+        };
+        curCompareList.push(item);
+    }
+    curCompareList.reverse();
 }
 
 function scrollBottomAndRightTag(doc)

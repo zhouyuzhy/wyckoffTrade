@@ -156,14 +156,16 @@
             </div>
         </div>
     </div>
-    <div id="info">基本信息
+    <div id="info" style="overflow-y:auto;">基本信息
         <div id="baseInfo" style="color: red;font-size: 12px"></div><br/><br/>
         <div id="cal_step">
         <div style="font-size: 15px">威科夫风险评估</div>
+            <span style="font-size: 10px">金字塔加仓：40%（4）、50%（3）、70%（2）、100%（1）</span><br/>
+            <span style="font-size: 10px">倒金字塔加仓：10%（1）、20%（2）、75%（3）、100%（4）</span>
             <div id="tr_scope" style="font-size: 10px">
                 0、压力评估<br/>
-                阻力位:<input type="number" id="tr_pressure_value" min="0.01" max="100000" step="0.01" /><br/>
-                支撑位:<input type="number" id="tr_support_value" min="0.01" max="100000" step="0.01" /><br/><br/>
+                <div id="pressure_div">阻力位:<input type="number" id="tr_pressure_value" min="0.01" max="100000" step="0.01" onchange="pressure_evaluate()"/></div><br/>
+                <div id="support_div">支撑位:<input type="number" id="tr_support_value" min="0.01" max="100000" step="0.01" onchange="pressure_evaluate()" /></div><br/><br/>
                 1、价格、成交量<br/>
                 1.1、三高量增、三低量增，趋势持续<br/>
                 1.2、量减、蜡烛小，需求/供应耗尽<br/><br/>
