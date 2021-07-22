@@ -15,5 +15,4 @@ var commonStocklistData=[
 ["02318","中国平安","PINAN","HK",""],
 ["HSI","恒生指数","HSI","HKI",""],
 ["HSTECH","恒生科技指数","HTI","HTI",""],
-
 ]

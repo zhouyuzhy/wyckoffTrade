@@ -2344,6 +2344,17 @@ function loadStockList()
                 html = "<option label=\"" + obj[1] + "." + obj[2] + "\" value=\"" + obj[0] + "\"  id=\"" + obj[1] + "\" />";
                 $('#stock_list').append(html);
             }
+
+            $('#stock_list_compare').empty();
+            for (var i = 0; i < compareStocklistData.length; i++)
+            {
+                var obj = compareStocklistData[i]; //.split(",");
+                var code = obj[0];
+                var name = obj[1];
+                var spell = obj[2];
+                html = "<option label=\"" + name + "." + spell + "\" value=\"" + code + "\"  id=\"" + name + "\" />";
+                $('#stock_list_compare').append(html);
+            }
         });
     }
     else
