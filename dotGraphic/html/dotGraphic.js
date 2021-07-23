@@ -437,7 +437,7 @@ function DrawKLine(curList, stockInfo)
     //点数图为标准的涨跌速
     var accSpeedIndex = 3;
     //对比强弱
-    var compareIndex = 0;
+    var compareIndex = 3;
     //通用附图尺寸
     var commonFigureIndex = 3;
     var sumIndex = offsetYL + dateIndex + volumeIndex + waveIndex + waveDotIndex + sdIndex + rsIndex + accPercentIndex + accSpeedIndex + compareIndex;
@@ -1192,7 +1192,7 @@ function DrawKLine(curList, stockInfo)
                 maxSpeed = curSpeed;
             }
             curVolume = 0;
-            lastOpen = item.open;
+            lastOpen = item.close;
         }
         else
         {
