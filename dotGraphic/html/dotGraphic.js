@@ -29,6 +29,7 @@
     //在线获取股票列表
     var isOnlineStockList = true;
     var stockArray = {};
+    var compareStockArray ={};
     var name;
     var code;
     var type;
@@ -2354,6 +2355,7 @@ function loadStockList()
                 var spell = obj[2];
                 html = "<option label=\"" + name + "." + spell + "\" value=\"" + code + "\"  id=\"" + name + "\" />";
                 $('#stock_list_compare').append(html);
+                compareStockArray[code] = obj;
             }
         });
     }
@@ -3127,7 +3129,7 @@ function generate()
     var obj = stockArray[code];
     name = obj[1];
     type = obj[3];
-    var compareObj = stockArray[compareCode];
+    var compareObj = compareStockArray[compareCode];
     compareName = compareObj[1];
     compareType = compareObj[3];
     DrawOX();
@@ -3295,11 +3297,12 @@ function getOnlineData(queryCode, queryType)
             klt = parseInt(cycle.replace('分钟', ''))
         }
 
-        var typeNum = (queryType == "sh" ? "1" : "0");
+        var typeNum = (queryType == "sh" ? "1" : "-1");
+        typeNum = (queryType == "sz" ? "0" : typeNum);
         typeNum = (queryType == "HK" ? "116" : typeNum);
         typeNum = (queryType == "HKI" ? "100" : typeNum);
         typeNum = (queryType == "HTI" ? "124" : typeNum);
-        typeNum = (typeNum == "0" ? queryType : typeNum);
+        typeNum = (typeNum == "-1" ? queryType : typeNum);
         //var url = "http://push2his.eastmoney.com/api/qt/stock/kline/get?cb=jQuery&secid=" + typeNum + "." + code + "&fields1=f1%2Cf2%2Cf3%2Cf4%2Cf5&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf61&klt=" + klt + "&fqt=" + rehabilitation + "&beg=" + beginDate + "&end=" + endDate;
         //去掉cb=jQuery 得到json
         var url = "http://push2his.eastmoney.com/api/qt/stock/kline/get?&secid=" + typeNum + "." + queryCode + "&fields1=f1%2Cf2%2Cf3%2Cf4%2Cf5&fields2=f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf61&klt=" + klt + "&fqt=" + rehabilitation + "&beg=" + beginDate + "&end=" + endDate;
